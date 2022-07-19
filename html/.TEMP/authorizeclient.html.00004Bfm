@@ -1,0 +1,29 @@
+<<
+expand file="/system/clearimage/DLL.lib" /expand
+mycode='ERROR'
+>>
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+  <title>Secure Email</title>
+ </head>
+ <body>
+  <form exitaction="" method="POST">
+   <h1>Secure Email</h1>
+   <h2>This device has not been authorized to view secure email for <<getvalue(headers,'to')>></h2>
+   <p><<ci_table(headers)>></p>
+
+
+   <h1>Secure Email, enter code to view <input name="mycode" type="number" min="0" max="9999" autofocus></h1>
+   <h2><<getenv('REQUEST_METHOD')>></h2>
+   <h3><<stamp>></h3>
+   <hr>
+   <<floor((milliseconds()-getvalue(headers,'date'))/1000)>> | <<getvalue(headers,'date')>>
+   <hr>
+   <<ci_table(headers)>>
+  </form>
+ </body>
+</html>
+

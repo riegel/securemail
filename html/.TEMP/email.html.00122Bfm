@@ -1,0 +1,88 @@
+<<
+expand file="/system/clearimage/DLL.lib" /expand
+temp=SYSLS_EXCLUDE.TEMP(clientpath)
+authorized='ERROR'
+for name=temp rowname=x do
+ if x[1]<>'timezone.txt' then
+  authorized=appends(authorized,unpostprep(RTL_chopchopright(x[1],'.txt')))
+ /if
+/for
+>>
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+  <title>Secure Email</title>
+  <script src="/apps/clear/clear.js"></script>
+  <script>
+   timer=setInterval("CLEAR.f.runOverlay('<<route(tag)+'/checkfalse'>>');",30000);
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../../system/clearimage/font/style.css">
+  <style>
+   a:not([href]).dropdown-toggle:hover { cursor: pointer;}
+   x-html {display: block; margin:0;padding:0;}
+  </style>
+ </head>
+ <body style="padding:0;margin:0;">
+  <div style="width:100%;background-color:#ccc;font-family:sans-serif;padding:.5em;padding-left:1em;padding-right:1em;margin:0;">
+   <svg width=".7em" height=".73em" style="stroke:green;fill:green;">
+    <g transform="translate(-267 -10)">
+     <path d="M274.675 14.847v-1.305c0-1.443-1.223-2.61-2.735-2.61-1.512
+             0-2.736 1.167-2.736 2.61v1.305h-.684c-.753 0-1.367.587-1.367
+             1.306v3.917c0 .72.614 1.305 1.367 1.305h6.84c.758 0 1.367-.586
+             1.367-1.305v-3.917c0-.72-.61-1.306-1.368-1.306h-.685zm-1.367
+             0h-2.736v-1.305c0-.72.615-1.306 1.368-1.306.753 0 1.368.587
+             1.368 1.306v1.305zm-.406
+             5.223h-1.92l.386-1.775c-.368-.194-.625-.566-.625-1
+             0-.632.54-1.142 1.197-1.142.662 0 1.197.51 1.197 1.142 0
+             .434-.257.806-.625 1l.39 1.775z"/>
+    </g>
+   </svg>
+   <<authorized[1,1]>>
+   <span style="float:right;"><a href="<<route(tag)+'/deauthorize'>>" AJAX style="color:#555;text-decoration:none;"><small>(deauthorize)</small></a></span>
+  </div>
+  <div class="container">
+   <div class="row">
+    <div class="col-md-12">
+     <div class="card mt-3">
+      <div class="card-header">
+       <b>From:</b> <<getvalue(headers,'from')>><br>
+       <b>To:</b> <<getvalue(headers,'to')>><br>
+       <<moment(UTCtoLocaltime(tag_[3],timezone),'ddd MMM D, YYYY h:mm a')>> <small>(<<size(seconds('')-floor(tag_[3]/1000)+' seconds')>> ago)<br>
+      </div>
+      <div class="card-body pt-2">
+       <div class="row">
+        <div class="col-md-12">
+         <h5><<getvalue(headers,'subject')>></h5>
+         <div>
+          <<replaceall(replaceall(RTL_replace(replace(getvalue(headers,'body'),'<html','<x-html'),'</html>','</x-html>'),'<strike>','<x-strike>'),'</strike>','</x-strike>')>>
+         </div>
+<div>
+<<
+
+
+temp='<?xml version="1.0" encoding="UTF-8"?>'+lf+chopleft(getvalue(headers,'body'),'<attach file="')
+display ci_tablevs(temp) /display
+
+
+
+>>
+</div>
+        </div>
+       </div>
+     <div>
+    </div>
+   <div>
+  </div>
+ </body>
+</html>
+
+
+
+
+

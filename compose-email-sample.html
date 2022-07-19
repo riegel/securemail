@@ -1,0 +1,24 @@
+<<
+
+	expand file="/system/clearimage/DLL.lib" /expand
+
+	PREFS_SECUREMAIL_REPLY = getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_REPLY','info@'+domainname)
+
+>>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+		<title>Launch Email Composer Demo</title>
+	</head>
+	<body style="padding:2em;">
+		<a href="<<page>>">RELOAD</a> | <<ci_edit2('/apps/securemail/compose-email-sample.html',800,600,'view/edit source','TRUE')>> | <a href="<<iconpage>>">Desktop</a>
+		<hr>
+		<p>
+			<a href="/apps/securemail/html/compose.html" name="e_from" value="<<PREFS_SECUREMAIL_REPLY>>" target="new_<<stamp>>_<<usernum>>">
+				Compose Email
+			</a>
+		</p>
+	</body>
+</html>

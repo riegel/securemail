@@ -1,0 +1,23 @@
+<<
+expand file="/system/clearimage/DLL.lib" /expand
+>>
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+  <title>Secure Email</title>
+ </head>
+ <body>
+  <form exitaction="" method="POST">
+   <h1>Secure Email, enter code to view <input name="mycode" type="number" min="0" max="9999" autofocus></h1>
+   <h2><<getenv('REQUEST_METHOD')>></h2>
+   <h3><<stamp>></h3>
+  </form>
+  <hr>
+  <<floor((milliseconds()-getvalue(code,'date'))/1000)>> | <<getvalue(code,'date')>>
+  <hr>
+  <<ci_table(code)>>
+ </body>
+</html>
+

@@ -1,0 +1,93 @@
+<<
+expand file="/system/clearimage/DLL.lib" /expand
+send_email=''
+mybutton='ERROR'
+mycode='ERROR'
+timezone='ERROR'
+
+if getenv('REQUEST_METHOD')='POST' then
+
+ $(getvariables(sysstdin,^
+  mybutton=unpostprep(EXTERNAL_mybutton)
+  mycode=unpostprep(EXTERNAL_mycode)
+  timezone=unpostprep(EXTERNAL_timezone)
+ ^))
+
+ if timezone<>'ERROR' then
+  timezone=replaceall(timezone,' ','_')
+  timezones=TimeZoneList()
+  found='ERROR'
+  for name=timezones rowname=x do
+   if timezone=x[1] or timezone=x[3] then
+    if timezone=x[3] then timezone=x[1] /if
+    found='TRUE' BREAK
+   /if
+  /for
+  if found='ERROR' then timezone='ERROR' /if
+ /if
+
+ if timezone<>'ERROR' then
+  copy timezone to file=clientpath+'timezone.txt' /copy
+ /if
+
+ if auth='ERROR' then
+  auth=random(1000,9999)
+  copy auth to file=authorizedpath /copy
+ /if
+ thefrom       = getval('/apps/securemail/app_preferences.txt','PREFS_SECUREMAIL_FROM'    ,'ERROR')
+
+	send_email=	thefrom				+','+
+			getvalue(headers,'to')		+','+
+			'Secure Email Access Code'	+','+'
+	<html>
+		<h1>Device Authorization Code</h1>
+		<h2>'+auth+'</h2>
+	</html>'
+
+
+
+/if
+>>
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+  <title>Secure Email</title>
+ </head>
+ <body>
+  <form exitaction="" method="POST">
+   <input type="hidden" name="timezone" id="timezone">
+   <h1>Secure Email</h1>
+   <h2>This device has not been authorized to view secure email for <<getvalue(headers,'to')>></h2>
+   <p>To authorize this device we will send an authorization code to <<getvalue(headers,'to')>>. This will grant this device to view secure emails from <<getvalue(headers,'from')>> sent to <<getvalue(headers,'to')>>
+   <hr>
+<<
+if auth<>'ERROR' then
+ display ^
+   <input name="mycode" type="number" min="0" max="9999" autofocus>
+   <button type="submit" name="mybutton" value="submitcode">Submit</button>
+   <button type="submit" name="mybutton" value="sendcode">Re-Send Access Code</button>^
+ /display
+else
+ display ^
+   <button type="submit" name="mybutton" value="sendcode">Send Access Code</button>^
+ /display
+/if
+>>
+
+  </form>
+
+  <hr>
+  <<auth>> | <<timezone>> | <<mycode>> | <<mybutton>><hr>
+  <<RTL_replace(replace(send_email,'<html','<Xhtml'),'</html>','</Xhtml>')>>
+
+  <script>
+   document.addEventListener('DOMContentLoaded', function(event) {
+    document.getElementById('timezone').value=Intl.DateTimeFormat().resolvedOptions().timeZone;
+   })
+  </script>
+
+ </body>
+</html>
+

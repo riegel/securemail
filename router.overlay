@@ -1,0 +1,223 @@
+<<
+ #  tag_[1]	 tag_[2]	 tag_[3]	 tag_[4]	 tag_[5]	tag_[6]		tag_[7]
+ # /api		/securemail	
+ # 				/upload
+ # 				/stamp		/hash
+ # 				/stamp		/hash		/deauthorize
+ # 				/stamp		/hash		/checksent
+ # 				/stamp		/hash		/checktrue
+ # 				/stamp		/hash		/checkfalse
+ #				/stamp 	 	/hash		/attach		/filesha256sum	/name.ext
+ # 
+ # 
+ # 
+ # 
+ # SEND_EMAIL_SECURE STRUCTURE                                shard
+ # datapath           shard                                   ||||
+ # /user/securemail/  f/f/f/f  /  messages  /  0123456789abcdeffff  /
+ #   message.txt                  ^^^^^^^^				7 years
+ #   headers-dateid.txt							7 years
+ #
+ # VIEW EMAIL STRUCTURE                           shard
+ # datapath           shard                       ||||
+ # /user/securemail/  d/4/c/3  /  clients  /  1a2b3c4d  /
+ #   riegel@clearimageonline.com  ^^^^^^^				2 years
+ #   rbarnett@docpay.com						2 years
+ # 
+ # 
+/#
+
+
+
+ datapath=getval('/apps/securemail/app_preferences.txt','PREFS_SECUREMAIL_DATAPATH','ERROR')
+
+ if not(biginteger(tag_[3])) then
+  if tag_[3]='upload' then goto 'upload/upload.overlay' /if
+  goto error(410)
+ else
+  stampHEX    = lower(ci_dectohex(stamp))
+  messagepath = datapath + SHARDpath(tag_[4])  + '/messages/' + tag_[4]  + '/'
+  clientpath  = datapath + SHARDpath(stampHEX) + '/clients/'                   sysmd(clientpath)
+  clientpath  = datapath + SHARDpath(stampHEX) + '/clients/'  + stampHEX + '/' sysmd(clientpath)
+
+  copy file=clientpath+'timezone.txt' to timezone /copy
+  copy file=clientpath+'useragent.txt' ts=',' to useragent /copy
+
+  if isfile(messagepath+            'message.txt') and				#	message.txt		/#
+     isfile(messagepath+'headers-'+tag_[3]+'.txt') then				#	headers-DATEID.txt	/#
+   copy file=messagepath+'message.txt' ts="," to message /copy			#	headers-DATEID.txt	/#
+   copy file=messagepath+'headers-'+tag_[3]+'.txt' ts="," to headers /copy	#	headers-DATEID.txt	/#
+
+   headers=setvalue(headers,'body',getvalue(message,'body'))
+   headers=setvalue(headers,'from',getvalue(message,'from'))
+   headers=setvalue(headers,'subject',getvalue(message,'subject'))
+
+
+
+   authorizedemail=getvalue(headers,'to')
+   authorizedpath=clientpath+postprep(authorizedemail)+'.txt'
+
+   copy file=authorizedpath to auth /copy
+   temp=split(auth,'|')
+   auth=temp[1,1]
+   retry=temp[1,2] if not(isinteger(retry)) then retry=0 /if
+
+   if tag_[5]='deauthorize' then
+     sysrm(authorizedpath)
+     runscript(^document.location.reload();^)
+     endoverlay()
+   /if
+
+   if tag_[5]='checksent' then
+    if isinteger(auth) then
+     runscript(^document.location.reload();^)
+     endoverlay()
+    else
+     endoverlay()
+    /if
+   /if
+
+   if tag_[5]='checktrue' then
+    if auth='TRUE' or not(isinteger(auth)) then
+     runscript(^document.location.reload();^)
+     endoverlay()
+    else
+     endoverlay()
+    /if
+   /if
+
+   if tag_[5]='checkfalse' then
+    if auth='TRUE' then
+     endoverlay()
+    else
+     runscript(^document.location.reload();^)
+     endoverlay()
+    /if
+   /if
+
+   if auth='true' then
+    if tag_[5]='attach' then
+     if getenv('HTTP_REFERER')='ERROR' then goto error(401) /if
+     filepush(datapath+SHARDpath(tag_[6])+'/files/'+tag_[6],'application/securemail; charset=utf-8')
+    elif tag_[5]='image' then
+     x=ci_fileinfo(path) mimetype=x[5]
+     x=ci_img(datapath+SHARDpath(tag_[6])+'/files/'+tag_[6],1000,1000,'false')
+     filepush(ci_tagresults[10],mimetype+'; charset=utf-8')
+    elif tag_[5]='download-attachment' then
+     goto 'html/attachment.html'
+    else
+     goto 'html/email.html'
+    /if
+   /if
+
+  else
+   goto error('404|'+stampHEX)
+  /if
+
+  if tag_[5]='attach' then goto error(401) /if
+
+
+  send_email=''
+  mybutton='ERROR'
+  mycode='ERROR'
+  if getenv('REQUEST_METHOD')='POST' then
+   $(getvariables(sysstdin,^
+    mybutton=unpostprep(EXTERNAL_mybutton)
+    mycode=unpostprep(EXTERNAL_mycode)
+    timezone=unpostprep(EXTERNAL_timezone)
+    useragent=unpostprep(EXTERNAL_useragent)
+   ^))
+
+   if useragent<>'ERROR' then
+    useragent=JSONnamevalue(useragent)
+    copy useragent to file=clientpath+'useragent.txt' ts=',' /copy
+   /if
+
+   if timezone<>'ERROR' then
+    timezone=replaceall(timezone,' ','_')
+    timezones=TimeZoneList()
+    found='ERROR'
+    for name=timezones rowname=x do
+     if timezone=x[1] or timezone=x[3] then
+      if timezone=x[3] then timezone=x[1] /if
+      found='TRUE' BREAK
+     /if
+    /for
+    if found='ERROR' then timezone='ERROR' /if
+   /if
+
+   if timezone<>'ERROR' then
+    copy timezone to file=clientpath+'timezone.txt' /copy
+   /if
+
+   if mybutton='sendcode' then
+    if auth='ERROR' then
+     auth=random(1000,9999)
+     copy auth+'|0' to file=authorizedpath /copy
+    /if
+    thefrom=getval('/apps/securemail/app_preferences.txt','PREFS_SECUREMAIL_FROM'    ,'ERROR')
+	send_email(	thefrom				,
+			getvalue(headers,'to')		,
+			'Secure Email Access Code'	,
+	'<html>
+		<h1>Device Authorization Code</h1>
+		<h2>'+auth+'</h2>
+		'+replaceall(showwith('<p>requested from a ',unpostprep(getvalue(useragent,"os.name")),' device'+showwith(' (',showwith('',unpostprep(getvalue(useragent,"device.vendor")),' ')+showwith('',unpostprep(getvalue(useragent,"device.model")),''),')')+showwith(' with ',unpostprep(getvalue(useragent,"browser.name")),'')+'</p>'),'+',' ')+'
+	</html>')
+   /if
+
+ 
+   if mybutton='submitcode' and mycode=auth then
+    copy 'true' to file=authorizedpath /copy
+   else
+    retry=retry+1
+    if retry>3 then
+     sysrm(authorizedpath)
+    else
+     copy auth+'|'+retry to file=authorizedpath /copy
+    /if
+   /if
+
+
+   exitgoto route(tag) # Using PRG Pattern https://en.wikipedia.org/wiki/Post/Redirect/Get /#
+  /if
+  goto 'html/authorizeclient.html'
+ /if
+>>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

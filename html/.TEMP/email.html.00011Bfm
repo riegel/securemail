@@ -1,0 +1,42 @@
+<<
+expand file="/system/clearimage/DLL.lib" /expand
+
+temp=SYSLS_EXCLUDE.TEMP(clientpath)
+authorized='ERROR'
+for name=temp rowname=x do
+ authorized=appends(authorized,unpostprep(RTL_chopchopright(x[1],'.txt')))
+/for
+>>
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+  <title>Secure Email</title>
+ </head>
+ <body>
+  <div style="width:100%;background-color:#ccc;font-family:sans-serif;"><<authorized[1,1]>></div>
+
+
+  <table border="1">
+   <tr>
+    <td>From</td>
+    <td><<getvalue(code,'from')>></td>
+   </tr>
+   <tr>
+    <td>To</td>
+    <td><<getvalue(code,'to')>></td>
+   </tr>
+   <tr>
+    <td>Subject</td>
+    <td><<getvalue(code,'subject')>></td>
+   </tr>
+   <tr>
+    <td>Body</td>
+    <td><<RTL_replace(replace(getvalue(code,'body'),'<html','<Xhtml'),'</html>','</Xhtml>')>></td>
+   </tr>
+  </table>
+  <<ci_table(code)>>
+ </body>
+</html>
+

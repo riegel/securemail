@@ -1,0 +1,107 @@
+expand file="/system/clearimage/libraries/shard.lib" /expand
+
+function redact(text) do
+ if getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_BOLDASREDACT','')='yes' then
+  text=replaceall(text,'<strike>','<r>') text=replaceall(text,'</strike>','</r>')
+  text=replaceall(text,'<b>'     ,'<r>') text=replaceall(text,'</b>'     ,'</r>')
+  text=replaceall(text,'<em>'    ,'<r>') text=replaceall(text,'</em>'    ,'</r>')
+  text=replaceall(text,'<strong>','<r>') text=replaceall(text,'</strong>','</r>')
+ else
+  text=replaceall(text,'<strike>','<r>') text=replaceall(text,'</strike>','</r>')
+ /if
+ return redactRECURSE(text) /return
+/function
+
+
+function redactRECURSE(text) locals a,b,L,M,R,r1,r2 do
+ if count(text,"<r>")=0 then return text /return /if
+ if count(text,"</r>")=0 then return text /return /if
+ a=locate(text,"<r>")-1
+ b=locate(text,"</r>")+3
+ L=left(text,a)
+ M=middle(text,a+4,b-4)
+ r1=random(0,6)-3        # -3, -2, -1,  0, +1, +2, +3 /#
+ r2=length(M)
+ r1=r1+r2
+ if r1<2 then r1=2 /if
+ R=right(text,length(text)-b)
+ return L+'<strike>'+left(M,1)+repeat('X',r1)+right(M,1)+'</strike>'+redactRECURSE(R) /return
+/function
+
+
+
+
+function send_email_secure(redact_secure_login,from.email,to.email,subject.email,body.email,attachpath) locals id,x,code,senddate,datapath,messagepath,nvpair,redacted,kind,method,temp,y,sum do
+
+ if redact_secure_login='redacted' then
+  redacted=replaceall(replaceall(redact(body.email),'<html','<div'),'</html>','</div>')
+  kind='redacted'
+  method='Unredacted'
+ else
+  redacted='ERROR'
+  kind='secured'
+  method='Securely'
+ /if
+
+ datapath      = getval('/apps/securemail/app_preferences.txt','PREFS_SECUREMAIL_DATAPATH','ERROR')
+ thefrom       = getval('/apps/securemail/app_preferences.txt','PREFS_SECUREMAIL_FROM'    ,'ERROR')
+ securefrom    = getval('/apps/securemail/app_preferences.txt','PREFS_SECUREMAIL_SECUREFROM'    ,'yes')
+ securesubject = getval('/apps/securemail/app_preferences.txt','PREFS_SECUREMAIL_SECURESUBJECT' ,'yes')
+
+ if datapath='ERROR' then return 'ERROR: Secure mail not configured (dp)' /return /if
+ if  thefrom='ERROR' then return 'ERROR: Secure mail not configured (fr)' /return /if
+
+ code=random(1000,9999)
+ senddate=milliseconds()
+
+
+ attached=''
+ temp=syslsUTC(attachpath)
+ if cols(temp)>1 then
+  for name=temp rowname=y do
+   if y[4]='FILE' then
+    sum=trim(SHA256SUM_FILE(attachpath+'/'+y[1]))
+    messagepath=datapath+SHARDpath(sum)+'/files/'		sysmd(messagepath)
+    syscp(attachpath+'/'+y[1],messagepath+sum)
+    sysfixprivate(messagepath+sum)
+    body.email=body.email+'<attach file="'+sum+'">'+y[1]+'</attach>'
+    attached=attached+'<a href="'+route('/api/securemail/'+senddate+'/[[{{HASHED-ID}}]]/download-attachment/'+sum+'/'+y[1])+'">'+unpostprep(y[1])+'</a><br>'
+   /if
+  /for
+ /if
+
+ id=replace(hash_sha256(from.email+' '+to.email+' '+subject.email+' '+body.email),'HEX:','')
+ attached=replaceall(attached,'/[[{{HASHED-ID}}]]/download-attachment/','/'+id+'/download-attachment/')
+ messagepath=datapath+SHARDpath(id)+'/messages/'		sysmd(messagepath)
+ messagepath=datapath+SHARDpath(id)+'/messages/'+id+'/'		sysmd(messagepath)
+
+ nvpair='ERROR'
+ x='ERROR' x[1]='from'    x[2]=   from.email nvpair=appends(nvpair,x)
+ x='ERROR' x[1]='to'      x[2]=     to.email nvpair=appends(nvpair,x)
+ x='ERROR' x[1]='subject' x[2]=subject.email nvpair=appends(nvpair,x)
+ x='ERROR'  x[1]='body'   x[2]=   body.email nvpair=appends(nvpair,x)
+ copy nvpair to file=messagepath+'message.txt' ts=',' /copy
+
+ nvpair='ERROR'
+ if securefrom<>'yes' then
+  x='ERROR' x[1]='from'    x[2]=   from.email nvpair=appends(nvpair,x) /if
+ x='ERROR'  x[1]='to'      x[2]=     to.email nvpair=appends(nvpair,x)
+ if securesubject<>'yes' then
+  x='ERROR' x[1]='subject' x[2]=subject.email nvpair=appends(nvpair,x) /if
+ x='ERROR'  x[1]='date'    x[2]=     senddate nvpair=appends(nvpair,x)
+ x='ERROR'  x[1]='code'    x[2]=         code nvpair=appends(nvpair,x)
+ copy nvpair to file=messagepath+'headers-'+senddate+'.txt' ts=',' /copy
+
+
+ if securefrom='yes' then from.email='' /if
+ return
+	send_email(	thefrom+'|'+from.email,
+			to.email,
+			subject.email,'
+	<html>
+		'+showwith('',redacted,'<hr>')+'
+		'+showwith('',attached,'<hr>')+'
+		<p>This email'+showwith(' from ',from.email,'')+' is '+kind+' (<a href="'+route('/api/securemail/'+senddate+'/'+id)+'">View '+method+'</a>).</p>
+	</html>')
+ /return 
+/function

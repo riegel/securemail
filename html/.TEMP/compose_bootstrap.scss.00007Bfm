@@ -1,0 +1,51 @@
+@font-face {
+ font-family: 'clearimage';
+ src:url('../../system/clearimage/font/clearimage-2.eot?vms5g');
+ src:url('../../system/clearimage/font/clearimage-2?#iefixvms5g') format('embedded-opentype'),
+  url('../../system/clearimage/font/clearimage-2.woff?vms5g') format('woff'),
+  url('../../system/clearimage/font/clearimage-2.ttf?vms5g') format('truetype'),
+  url('../../system/clearimage/font/clearimage-2.svg?vms5g#clearimage-2') format('svg');
+ font-weight: normal;
+ font-style: normal;
+}
+@import '../../system/clearimage/font/font';
+
+
+
+
+// $primary:rgba(20,57,93,1);
+// $secondary:#3a3a3a;
+
+
+@import "/apps/appmanager/bootstrap/sass/bootstrap-5.0.2/scss/bootstrap.scss";
+
+#attach {
+ display: flex;
+ width: auto;
+ progress {
+  width: -webkit-fill-available;
+  margin-left:1em;
+  margin-right:1em;
+ }
+
+ div[type=status] {
+  margin-left:1em;
+  margin-right:1em;
+ }
+
+ label {
+//  padding: 0.375rem 0.75rem;
+  @extend .btn;
+  @extend .btn-sm;
+  @extend .btn-outline-secondary;
+//  width:auto;
+  margin:0;
+ }
+ button {
+  @extend .btn;
+  @extend .btn-sm;
+  @extend .btn-outline-secondary;
+  padding-top:0;
+  padding-bottom:0;
+ }
+}

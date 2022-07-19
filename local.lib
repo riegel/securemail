@@ -1,0 +1,51 @@
+function HTML_authorize_variables(vars) locals text,x do
+ vars=split(vars,' ')
+ text=^   <script>
+    document.addEventListener("DOMContentLoaded", function(event) { 
+     document.getElementById("authorizedvariables").innerHTML='';
+    });
+   </script>
+   <span id="authorizedvariables">^
+ for name=vars rowname=x do
+  text=text+^    <input type="hidden" name="^+x[1]+^">^+lf
+ /for
+ text=text+^   </span>^
+ return text /return
+/function
+
+
+function showicon(path,size) locals temp,ext,ftype,desc,mimetype do
+ x=ci_fileinfo(path)
+ ext=x[1]
+ ftype=x[2]
+ desc=x[3]
+ mimetype=x[5]
+ if ftype='txt' then
+   temp='<span ci-icon="file-empty" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='dir' then
+   temp='<span ci-icon="folder" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='pict' then
+   temp='<span ci-icon="camera2" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='mp3' then
+   temp='<span ci-icon="music-note3" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='lkd' then
+   temp='<span ci-icon="folder-minus" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='mov' then
+   temp='<span ci-icon="camera" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='pdf' then
+   temp='<span ci-icon="file-empty" class="red '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='bb' or z[8]='sit' or z[8]='pak' then
+   temp='<span ci-icon="file-zip" class="blue '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='zip' then
+   temp='<span ci-icon="file-zip" class="yellow '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='db' then
+   temp='<span ci-icon="database" class="green '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='unk' then
+   temp='<span ci-icon="cloud-gear" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ elif ftype='table' then
+   temp='<span ci-icon="file-spreadsheet" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ else
+   temp='<span ci-icon="file-empty" class="icon-color '+showwith('',size,' ')+'align-middle"></span>'
+ /if
+ return temp /return
+/function
