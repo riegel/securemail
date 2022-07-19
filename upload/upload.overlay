@@ -1,0 +1,190 @@
+<<
+ # 
+ # /api/securemail/upload
+ # /api/securemail/upload/log
+/#
+
+if tag_[4]='log' then
+	copy file=dirname(page)+'upload-log.txt' to serverlog /copy
+	sysrm(dirname(page)+'upload-log.txt')
+	webpush(serverlog,'text/plain')
+/if
+
+
+
+
+
+function assemble_upload_manifest(json,request,store) locals filenames,batchid,destination,naming,indir,tasks,x,i,found,y,thefile,outfile,cmd,f,a do
+ filenames=getvalues(request,'files[##].name')
+ batchid=getvalue(request,'batchid')
+ destination=getvalue(request,'destination')
+ naming=getvalue(request,'naming')
+ indir=store+batchid+'/'
+ tasks='ERROR'
+ for name=x value=1 to rows(filenames) do
+  i=getvalue(request,'files['+x+'].chunks')
+  if isinteger(i) then
+   found='TRUE'
+   for name=y value=1 to i do
+    thefile=right('00000000'&x,8)+'-'+right('00000000'&y,8)+'.bin'
+    if not(isfile(indir+thefile)) then found='ERROR' /if
+   /for
+   if found='TRUE' then
+    outfile=fileprep(getvalue(request,'files['+x+'].name'))
+    if i=1 then y=1
+     thefile=right('00000000'&x,8)+'-'+right('00000000'&y,8)+'.bin'
+     syscp(indir+thefile,indir+outfile)
+     sysfixprivate(indir+outfile)
+     sysrm(indir+thefile)
+    else
+     cmd='bin/cat '+ci_pripath(indir+right('00000000'&x,8)+'-*')+' > '+ci_pripath(indir+outfile)
+     syscall_with_commas('Join all the chunks',cmd)
+     for name=y value=1 to i do
+      thefile=right('00000000'&x,8)+'-'+right('00000000'&y,8)+'.bin'
+      sysrm(indir+thefile)
+     /for
+    /if
+   else
+    return 'ERROR: Missing chunk aborting' /return
+   /if
+   f=fileinfoUTC(indir+outfile)
+   if getvalue(request,'files['+x+'].size')<>f[2] then
+    return 'ERROR: File size mismatch aborting' /return
+   /if
+  else
+   return 'ERROR: Missing Chunks value' /return
+  /if
+ /for
+
+ # 
+ #  copy json to file=indir+batchid+'.json' /copy
+ #  sysfixprivate(indir+batchid+'.json')
+/#
+
+ # Ok now we move them into place /#
+ if isdir(destination) then
+  if naming='single' or naming='multiple' or naming='' or naming='ERROR' then
+   useclientname='TRUE'
+  else
+   useclientname='FALSE'
+  /if
+  a=syslsUTC(store+batchid)
+
+
+  for name=a rowname=x do
+ #    if x[4]='file' and x[1]<>batchid+'.json' then /#
+   if x[4]='file' then
+    if useclientname='TRUE' then
+     thefile=fileprep(unpostprep(x[1]))
+    else
+     thefile=fileprep(unpostprep(naming))
+    /if
+        # 
+        # syscp(store+batchid+'/'+x[1],destination+'/'+thefile)
+        # sysfixfile(destination+'/'+thefile)
+        # sysrm(store+batchid+'/'+x[1])
+       /#
+   /if
+  /for
+ /if
+ return batchid /return
+/function
+
+
+
+
+
+function save_chunk(json,request,store) locals batchid,chunk,filenumber,chunknumber,thefile do
+ batchid=getvalue(request,'batchid')
+ chunk=getvalue(request,'chunk')
+ filenumber=chopchopleft(chopchopright(chunk,','),'file ')
+ chunknumber=chopchopright(chopchopleft(chunk,'chunk '),' ')
+ thefile=right('00000000'&filenumber,8)+'-'+right('00000000'&chunknumber,8)+'.bin'
+ if length(batchid)>10 and length(batchid)<100 and aestivafilename(batchid)=batchid then
+  sysmd(store+batchid)
+  BASE64DECODE(chopchopleft(sysstdin,','),store+batchid+'/'+thefile)
+  sysfixprivate(store+batchid+'/'+thefile)
+ /if
+ if hash_sha256('@'+store+batchid+'/'+thefile)='HEX:'+getenv('HTTP_DIGEST') then
+  return ^SUCCESS^ /return
+ else
+  return ^ERROR:Digest Doesn't match^ /return
+ /if
+/function
+
+
+
+
+	 #
+	 # STEP 1
+	 # We gather our request either from the POST, or from the headers in the PUT
+	/#
+	if getenv('REQUEST_METHOD')='POST' then
+		if left(sysstdin,1)='{' then
+			json=sysstdin
+			request=JSONnamevalue(json)
+		else
+			json=^{"sysstdin":"^+JSONescape(sysstdin)+^"}^
+			request=JSONnamevalue(json)
+		/if
+	elif getenv('REQUEST_METHOD')='PUT' then
+		json=^{
+			"batchid":"^+getenv('HTTP_BATCH_ID')+^",
+			"authorization":"^+getenv('HTTP_AUTHORIZATION')+^",
+			"destination":"^+getenv('HTTP_DESTINATION')+^",
+			"naming":"^+getenv('HTTP_NAMING')+^",
+			"range":"^+getenv('HTTP_CONTENT_RANGE')+^",
+			"chunk":"^+getenv('HTTP_FILE_CHUNK')+^"
+		}^
+		request=JSONnamevalue(json)
+	else
+		webpush(^{"message":"API endpoint not found","status":404}^,'application/json')
+	/if
+
+
+
+
+	 #
+	 # STEP 2
+	 # Log the Request
+	/#
+	append
+		now+' '+
+		getenv('REQUEST_METHOD')+lf+
+		d_(getvalue(request,'authorization'))+lf+
+		ci_ttable(request)+lf+lf
+
+		to file=dirname(page)+'upload-log.txt'
+	/append
+
+
+
+
+	 #
+	 # STEP 3
+	 # Authorize
+	/#
+
+	if chopchopleft(d_(getvalue(request,'authorization')),' ')<>getvalue(request,'batchid')+getvalue(request,'naming') then
+		webpush(^{"message":"Unauthorized","status":401}^,'application/json')
+	/if
+
+
+
+
+	 #
+	 # STEP 4
+	 # Save incoming Chunk, Or Assemble chunks already recieved
+	/#
+	if getenv('REQUEST_METHOD')='POST' then
+		temp=assemble_upload_manifest(json,request,dirname(page)+'incoming/')
+		webpush(^{"message":"Success","status":200}^,'application/json')
+	elif getenv('REQUEST_METHOD')='PUT' then
+		result=save_chunk(json,request,dirname(page)+'incoming/')
+		if result='SUCCESS' then
+			webpush(^{"message":"Success","status":200}^,'application/json')
+		else
+			webpush(^{"message":"^+result+^","status":409}^,'application/json')
+		/if
+	/if
+>>

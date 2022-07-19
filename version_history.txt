@@ -1,0 +1,25 @@
+1.0 05/20/2022 19:52 Initial Commit
+1.01 05/20/2022 20:03 Added Versioning and Icon
+1.02 06/22/2022 14:04 Bundle first ready version
+1.03 06/22/2022 14:07 Bundle first ready version
+1.04 06/22/2022 14:51 Bundle first ready version
+1.05 06/22/2022 15:00 Bundle first ready version
+1.06 06/22/2022 15:45 Bundle first ready version
+1.07 06/22/2022 15:50 Beta Working.
+1.08 06/22/2022 16:23 Added Start page with default reply address
+1.09 06/22/2022 16:24 Added Start page with default reply address
+1.1 06/22/2022 16:25 Added Start page with default reply address
+1.12 06/23/2022 08:52 Added resize to iframe, works better than before. Still needs tweaking.
+1.13 07/18/2022 10:20 Added File Upload / Attachment capabilities
+1.14 07/18/2022 10:22 Added File Upload / Attachment capabilities
+1.15 07/18/2022 10:32 Made SHA256SUM_FILE public
+1.16 07/18/2022 12:12 Added better attachment support
+1.17 07/18/2022 12:13 Added better attachment support
+1.18 07/18/2022 17:15 Added better attachment support
+1.19 07/18/2022 17:18 Added better attachment support
+1.2 07/18/2022 17:21 Added better attachment support
+1.21 07/18/2022 17:31 Added better attachment support
+1.22 07/19/2022 05:47 UI improvements to file attachment download page
+1.23 07/19/2022 06:05 Added limit to number tries with access code (3)
+1.24 07/19/2022 06:28 UI improvements to compose page
+1.25 07/19/2022 06:44 UI improvements to attachment page

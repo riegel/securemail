@@ -1,0 +1,224 @@
+<<
+expand file="/system/clearimage/DLL.lib" /expand
+expand file="/system/clearimage/libraries/shard.lib" /expand
+
+expand file="/apps/appmanager/local.lib" /expand
+
+
+
+PREFS_SECUREMAIL_DATAPATH       = getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_DATAPATH',''   )
+PREFS_SECUREMAIL_FROM           = getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_FROM','securemail-noreply@'+domainname)
+PREFS_SECUREMAIL_REPLY          = getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_REPLY','info@'+domainname)
+PREFS_SECUREMAIL_SECUREFROM     = getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_SECUREFROM'    ,'yes')
+PREFS_SECUREMAIL_SECURESUBJECT  = getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_SECURESUBJECT' ,'yes')
+PREFS_SECUREMAIL_BOLDASREDACT   = getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_BOLDASREDACT'  ,'')
+
+SECUREMAIL_DATAPATH_NOTE=''
+if isdir(PREFS_SECUREMAIL_DATAPATH) then
+ t=replace(hash_sha256('Hello World'),'HEX:','')
+ if isdir(PREFS_SECUREMAIL_DATAPATH+shardpath(t)) then
+  # SECUREMAIL_DATAPATH_NOTE=showwith('',SECUREMAIL_DATAPATH_NOTE,' ')+'Shard Path Found' /#
+ else
+  temp=syslsUTC(PREFS_SECUREMAIL_DATAPATH)
+  SECUREMAIL_DATAPATH_NOTE=showwith('',SECUREMAIL_DATAPATH_NOTE,' ')+'Path Missing Shard'
+  if temp='' then 
+   SECUREMAIL_DATAPATH_NOTE=showwith('',SECUREMAIL_DATAPATH_NOTE,' ')+' <small><a href="shardpath">shard path</a></small>'
+  else
+   SECUREMAIL_DATAPATH_NOTE=showwith('',SECUREMAIL_DATAPATH_NOTE,' ')+' <small>directory not empty unable to shard</small>'
+  /if
+ /if
+else
+ SECUREMAIL_DATAPATH_NOTE=showwith('',SECUREMAIL_DATAPATH_NOTE,' ')+'Path Not Found. Enter a valid path.'
+ if length(PREFS_SECUREMAIL_DATAPATH)>1 and PREFS_SECUREMAIL_DATAPATH<>'ERROR' and left(PREFS_SECUREMAIL_DATAPATH,1)='/' and right(PREFS_SECUREMAIL_DATAPATH,1)='/' then
+  SECUREMAIL_DATAPATH_NOTE=showwith('',SECUREMAIL_DATAPATH_NOTE,' ')+'<small><a href="buildstructure">build secure email data structure</a></small>'
+ /if
+
+/if
+
+HTML_SECUREMAIL_DATAPATH=^
+      <div class="form-group">
+       <label for="PREFS_SECUREMAIL_DATAPATH">Path to Data ^+showwith('<small>(',SECUREMAIL_DATAPATH_NOTE,')</small>')+^</label>
+       <input type="text" name="PREFS_SECUREMAIL_DATAPATH" id="PREFS_SECUREMAIL_DATAPATH" class="form-control" placeholder="/user/securemail">
+      </div>^
+
+
+HTML_SECUREMAIL_SECUREFROM=^
+      <div class="form-group">
+       <div class="checkbox">
+        <label for="PREFS_SECUREMAIL_SECUREFROM">
+         <input type="checkbox" name="PREFS_SECUREMAIL_SECUREFROM" id="PREFS_SECUREMAIL_SECUREFROM" value="yes"> Keep the FROM field secure
+        </label>
+       </div>
+      </div>^
+
+HTML_SECUREMAIL_SECURESUBJECT=^
+      <div class="form-group">
+       <div class="checkbox">
+        <label for="PREFS_SECUREMAIL_SECURESUBJECT">
+         <input type="checkbox" name="PREFS_SECUREMAIL_SECURESUBJECT" id="PREFS_SECUREMAIL_SECURESUBJECT" value="yes"> Keep the SUBJECT field secure
+        </label>
+       </div>
+      </div>^
+
+
+HTML_SECUREMAIL_FROM=^
+      <div class="form-group">
+       <label for="PREFS_SECUREMAIL_FROM">From Address</label>
+       <input type="text" name="PREFS_SECUREMAIL_FROM" id="PREFS_SECUREMAIL_FROM" class="form-control" placeholder="securemail-noreply@<<domainname>>">
+      </div>^
+
+HTML_SECUREMAIL_REPLY=^
+      <div class="form-group">
+       <label for="PREFS_SECUREMAIL_REPLY">Reply to Address</label>
+       <input type="text" name="PREFS_SECUREMAIL_REPLY" id="PREFS_SECUREMAIL_REPLY" class="form-control" placeholder="info@<<domainname>>">
+      </div>^
+
+
+
+HTML_SECUREMAIL_BOLDASREDACT=^
+      <div class="form-group">
+       <div class="checkbox">
+        <label for="PREFS_SECUREMAIL_BOLDASREDACT">
+         <input type="checkbox" name="PREFS_SECUREMAIL_BOLDASREDACT" id="PREFS_SECUREMAIL_BOLDASREDACT" value="yes"> Treat Bold sections as redacted
+        </label>
+       </div>
+      </div>^
+
+
+
+MAKE_DEFAULT_TOO=''
+
+
+
+
+>>
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta id="viewport" name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+  <title>Files Preferences</title>
+  <<commonheader>>
+  <link rel="stylesheet" type="text/css" href="/apps/appmanager/apps.css?v=2">
+  <style>
+   .tab-content {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+   }
+
+   .nav-tabs {
+    margin-bottom: 0;
+   }
+  </style>
+ </head>
+ <body class="container">
+ <form action="saveprefs" method="post"><<HTML_authorize_variables('mybutton')>>
+  <div class="row">
+   <div class="col-md-12">
+    <div class="panel panel-default">
+
+
+     <div class="panel-heading">
+      <<apptitle>>
+     </div>
+
+
+
+
+
+
+     <div class="panel-body">
+
+
+      <<HTML_SECUREMAIL_DATAPATH>>
+      <<HTML_SECUREMAIL_FROM>>
+      <<HTML_SECUREMAIL_REPLY>>
+
+      <<HTML_SECUREMAIL_SECUREFROM>>
+      <<HTML_SECUREMAIL_SECURESUBJECT>>
+
+      <<HTML_SECUREMAIL_BOLDASREDACT>>
+
+      <div class="form-group">
+       <button type="submit" name="mybutton" value="save" class="btn btn-primary">Save</button>
+       <button type="submit" name="mybutton" value="cancel" class="btn btn-link">Cancel</button>
+      </div>
+     </div>
+
+
+
+    <div>
+
+   </div>
+  <div>
+
+
+
+
+
+
+ </form>
+ </body>
+</html>
+<<overlay saveprefs
+
+
+ if mybutton='save' then
+  putval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_DATAPATH',PREFS_SECUREMAIL_DATAPATH)
+  putval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_SECUREFROM'    ,PREFS_SECUREMAIL_SECUREFROM    )
+  putval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_SECURESUBJECT' ,PREFS_SECUREMAIL_SECURESUBJECT )
+  putval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_FROM'          ,PREFS_SECUREMAIL_FROM          )
+  putval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_REPLY'         ,PREFS_SECUREMAIL_REPLY         )
+  putval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_BOLDASREDACT'  ,PREFS_SECUREMAIL_BOLDASREDACT  )
+
+  csstext='padding-left:.5em;padding-right:.5em;color:#555;background-color:black;text-decoration:none;'
+  if PREFS_SECUREMAIL_BOLDASREDACT='' then
+   css=^/* This file is autogenerated by /apps/securemail/app_preferences.html */ strike {^+csstext+^}^
+  else
+   css=^/* This file is autogenerated by /apps/securemail/app_preferences.html */ strike,b,em,strong {^+csstext+^}^
+  /if
+  copy css to file="/apps/securemail/html/compose.css" /copy
+  sysfixpublic('/apps/securemail/html/compose.css')
+
+
+
+  messageAT('settings saved','/apps/appmanager/preferences.html') message('settings saved')
+  message_codeAT('success','/apps/appmanager/preferences.html')   message_code('success'  )
+  goto page
+ /if
+
+ if PREFS_SECUREMAIL_DATAPATH<>'' and PREFS_SECUREMAIL_DATAPATH<>'ERROR' and left(PREFS_SECUREMAIL_DATAPATH,1)='/' and isdir(PREFS_SECUREMAIL_DATAPATH) then
+  # good path /#
+ else
+  goto page
+ /if
+
+ goto '/apps/appmanager/preferences.html'
+>>
+
+
+
+
+
+
+
+
+<<overlay buildstructure
+ PREFS_SECUREMAIL_DATAPATH = getval(dirname(page)+'app_preferences.txt','PREFS_SECUREMAIL_DATAPATH','')
+ if length(PREFS_SECUREMAIL_DATAPATH)>1 and PREFS_SECUREMAIL_DATAPATH<>'ERROR' and left(PREFS_SECUREMAIL_DATAPATH,1)='/' and right(PREFS_SECUREMAIL_DATAPATH,1)='/' then
+  if not(isdir(PREFS_SECUREMAIL_DATAPATH)) then
+   temp=split(middle(PREFS_SECUREMAIL_DATAPATH,2,length(PREFS_SECUREMAIL_DATAPATH)-1),'/')
+   p=''
+   for name=temp rowname=x do
+    p=p+'/'+x[1]
+    sysmd(p)
+   /for
+  /if
+  if isdir(PREFS_SECUREMAIL_DATAPATH) then
+   temp=SHARDmake(PREFS_SECUREMAIL_DATAPATH)
+  /if
+ /if
+ goto page
+>>
