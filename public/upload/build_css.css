@@ -1,0 +1,316 @@
+div[data-id="[root]_body"][data-theme=fill] input#_root__file._root_hide, input#_root__file._root_hide {
+  width: 0.2px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+div[data-id="[root]_body"],
+div[data-id="[root]_body"] * {
+  box-sizing: border-box;
+}
+
+div[data-id="[root]_body"] label + input[type=file] * {
+  pointer-events: none;
+}
+
+div[data-id="[root]_body"][data-theme] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  width: 100%;
+  height: 100%;
+}
+div[data-id="[root]_body"][data-theme] div,
+div[data-id="[root]_body"][data-theme] input#_root__file,
+div[data-id="[root]_body"][data-theme] label,
+div[data-id="[root]_body"][data-theme] progress {
+  flex-grow: 4;
+}
+div[data-id="[root]_body"][data-theme] button {
+  flex-grow: 1;
+}
+div[data-id="[root]_body"][data-theme] progress::-webkit-progress-value {
+  transition: width 2s;
+}
+div[data-id="[root]_body"][data-theme] progress {
+  border-radius: 100px;
+  background-color: #efefef;
+  height: 0.5em;
+}
+div[data-id="[root]_body"][data-theme] progress::-webkit-progress-bar {
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 100px;
+}
+div[data-id="[root]_body"][data-theme] progress::-webkit-progress-value {
+  border-radius: 100px 0 0 100px;
+  background-color: #0275ff;
+}
+div[data-id="[root]_body"][data-theme] progress[value="100"]::-webkit-progress-value {
+  border-radius: 100px;
+}
+
+div[data-id="[root]_body"][data-theme=fill] button, div[data-id="[root]_body"][data-theme=fill] label,
+div[data-id="[root]_body"][data-theme=fill] div[type=status],
+div[data-id="[root]_body"][data-theme=fill] input#_root__file,
+div[data-id="[root]_body"][data-theme=dark] button,
+div[data-id="[root]_body"][data-theme=dark] label,
+div[data-id="[root]_body"][data-theme=dark] div[type=status],
+div[data-id="[root]_body"][data-theme=dark] input#_root__file,
+div[data-id="[root]_body"][data-theme=light] button,
+div[data-id="[root]_body"][data-theme=light] label,
+div[data-id="[root]_body"][data-theme=light] div[type=status],
+div[data-id="[root]_body"][data-theme=light] input#_root__file {
+  border: none;
+  padding: 3em 1em;
+  text-align: center;
+  text-decoration: none;
+  font-size: 1em;
+  font-family: sans-serif;
+  margin-bottom: 4px;
+}
+div[data-id="[root]_body"][data-theme=fill] input#_root__file,
+div[data-id="[root]_body"][data-theme=dark] input#_root__file,
+div[data-id="[root]_body"][data-theme=light] input#_root__file {
+  padding: 0.8em 2em;
+}
+div[data-id="[root]_body"][data-theme=fill] div[type=status],
+div[data-id="[root]_body"][data-theme=dark] div[type=status],
+div[data-id="[root]_body"][data-theme=light] div[type=status] {
+  background-color: rgba(0, 0, 0, 0);
+}
+div[data-id="[root]_body"][data-theme=fill] progress,
+div[data-id="[root]_body"][data-theme=dark] progress,
+div[data-id="[root]_body"][data-theme=light] progress {
+  appearance: none;
+  border: none;
+  width: 100%;
+  position: relative;
+  margin: 4px;
+  height: 3.2em;
+}
+div[data-id="[root]_body"][data-theme=fill] #_root__loader,
+div[data-id="[root]_body"][data-theme=dark] #_root__loader,
+div[data-id="[root]_body"][data-theme=light] #_root__loader {
+  width: 2em;
+  height: 2em;
+  top: -1.2em;
+  left: -0.8em;
+}
+
+div[data-id="[root]_body"][data-theme=fill] {
+  display: table;
+}
+div[data-id="[root]_body"][data-theme=fill] label, div[data-id="[root]_body"][data-theme=fill] button,
+div[data-id="[root]_body"][data-theme=fill] div[type=status],
+div[data-id="[root]_body"][data-theme=fill] input#_root__file,
+div[data-id="[root]_body"][data-theme=fill] progress {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
+div[data-id="[root]_body"][data-theme=light] button, div[data-id="[root]_body"][data-theme=light] label, div[data-id="[root]_body"][data-theme=light] input#_root__file {
+  background-color: #d2e7ff;
+  color: #444444;
+}
+div[data-id="[root]_body"][data-theme=light] button:hover, div[data-id="[root]_body"][data-theme=light] button:focus,
+div[data-id="[root]_body"][data-theme=light] label:hover, div[data-id="[root]_body"][data-theme=light] label:focus, div[data-id="[root]_body"][data-theme=light] label._root_active,
+div[data-id="[root]_body"][data-theme=light] input#_root__file:hover, div[data-id="[root]_body"][data-theme=light] input#_root__file:focus {
+  background-color: #fff6e9;
+}
+div[data-id="[root]_body"][data-theme=light] progress[value] {
+  background-color: #fffef9;
+  color: royalblue;
+}
+div[data-id="[root]_body"][data-theme=light] progress::-webkit-progress-value {
+  background-color: #e3f0ff;
+}
+div[data-id="[root]_body"][data-theme=light] progress[value]::-webkit-progress-bar {
+  background-color: #fffef9;
+}
+div[data-id="[root]_body"][data-theme=light] progress::-moz-progress-bar {
+  background-color: #e3f0ff;
+}
+div[data-id="[root]_body"][data-theme=light] #_root__loader {
+  border: 0.4em solid #fffef9;
+  border-top: 0.4em solid #e3f0ff;
+}
+
+div[data-id="[root]_body"][data-theme=dark] button, div[data-id="[root]_body"][data-theme=dark] label, div[data-id="[root]_body"][data-theme=dark] input#_root__file {
+  background-color: #216ae1;
+  color: #dddddd;
+}
+div[data-id="[root]_body"][data-theme=dark] button:hover, div[data-id="[root]_body"][data-theme=dark] button:focus,
+div[data-id="[root]_body"][data-theme=dark] label:hover, div[data-id="[root]_body"][data-theme=dark] label:focus, div[data-id="[root]_body"][data-theme=dark] label._root_active,
+div[data-id="[root]_body"][data-theme=dark] input#_root__file:hover, div[data-id="[root]_body"][data-theme=dark] input#_root__file:focus {
+  background-color: #f4d47c;
+  color: #444444;
+}
+div[data-id="[root]_body"][data-theme=dark] progress[value] {
+  background-color: #bebebe;
+  color: royalblue;
+}
+div[data-id="[root]_body"][data-theme=dark] progress::-webkit-progress-value {
+  background-color: #082c6c;
+}
+div[data-id="[root]_body"][data-theme=dark] progress[value]::-webkit-progress-bar {
+  background-color: #bebebe;
+}
+div[data-id="[root]_body"][data-theme=dark] progress::-moz-progress-bar {
+  background-color: #082c6c;
+}
+div[data-id="[root]_body"][data-theme=dark] #_root__loader {
+  border: 0.4em solid #bebebe;
+  border-top: 0.4em solid #082c6c;
+}
+
+div[data-id="[root]_body"][data-theme=fill] button {
+  background-color: #d2e7ff;
+  color: #444444;
+}
+div[data-id="[root]_body"][data-theme=fill] label, div[data-id="[root]_body"][data-theme=fill] input#_root__file {
+  background-color: #fffef9;
+  color: #444444;
+}
+div[data-id="[root]_body"][data-theme=fill] button:hover, div[data-id="[root]_body"][data-theme=fill] button:focus,
+div[data-id="[root]_body"][data-theme=fill] label:hover, div[data-id="[root]_body"][data-theme=fill] label:focus, div[data-id="[root]_body"][data-theme=fill] label._root_active,
+div[data-id="[root]_body"][data-theme=fill] input#_root__file:hover, div[data-id="[root]_body"][data-theme=fill] input#_root__file:focus {
+  background-color: #fff6e9;
+}
+div[data-id="[root]_body"][data-theme=fill] progress[value] {
+  background-color: #fffef9;
+  color: royalblue;
+}
+div[data-id="[root]_body"][data-theme=fill] progress::-webkit-progress-value {
+  background-color: #e3f0ff;
+}
+div[data-id="[root]_body"][data-theme=fill] progress[value]::-webkit-progress-bar {
+  background-color: #fffef9;
+}
+div[data-id="[root]_body"][data-theme=fill] progress::-moz-progress-bar {
+  background-color: #e3f0ff;
+}
+div[data-id="[root]_body"][data-theme=fill] #_root__loader {
+  border: 0.4em solid #fffef9;
+  border-top: 0.4em solid #e3f0ff;
+}
+
+label#_root__label._root_show {
+  display: block;
+}
+
+label#_root__label._root_hide {
+  display: none;
+}
+
+button#_root__upload._root_show {
+  display: block;
+}
+
+button#_root__upload._root_hide {
+  display: none;
+}
+
+button#_root__cancel._root_show {
+  display: block;
+}
+
+button#_root__cancel._root_hide {
+  display: none;
+}
+
+progress#_root__progress._root_show {
+  display: block;
+}
+
+progress#_root__progress._root_hide {
+  display: none;
+}
+
+div#_root__status._root_show {
+  display: block;
+}
+
+div#_root__status._root_hide {
+  display: none;
+}
+
+button#_root__repeat._root_show {
+  display: block;
+}
+
+button#_root__repeat._root_hide {
+  display: none;
+}
+
+div[data-id="[root]_body"][data-theme=fill] label#_root__label._root_show {
+  display: table-cell;
+}
+div[data-id="[root]_body"][data-theme=fill] label#_root__label._root_hide {
+  display: none;
+}
+div[data-id="[root]_body"][data-theme=fill] button#_root__upload._root_show {
+  display: table-cell;
+}
+div[data-id="[root]_body"][data-theme=fill] button#_root__upload._root_hide {
+  display: none;
+}
+div[data-id="[root]_body"][data-theme=fill] button#_root__cancel._root_show {
+  display: table-cell;
+}
+div[data-id="[root]_body"][data-theme=fill] button#_root__cancel._root_hide {
+  display: none;
+}
+div[data-id="[root]_body"][data-theme=fill] progress#_root__progress._root_show {
+  display: table-cell;
+}
+div[data-id="[root]_body"][data-theme=fill] progress#_root__progress._root_hide {
+  display: none;
+}
+div[data-id="[root]_body"][data-theme=fill] div#_root__status._root_show {
+  display: table-cell;
+}
+div[data-id="[root]_body"][data-theme=fill] div#_root__status._root_hide {
+  display: none;
+}
+div[data-id="[root]_body"][data-theme=fill] button#_root__repeat._root_show {
+  display: table-cell;
+}
+div[data-id="[root]_body"][data-theme=fill] button#_root__repeat._root_hide {
+  display: none;
+}
+
+div[data-id="[root]_body"]:not([data-theme]) label#_root__label._root_show {
+  display: inline-block;
+}
+div[data-id="[root]_body"]:not([data-theme]) button#_root__upload._root_show {
+  display: inline-block;
+}
+div[data-id="[root]_body"]:not([data-theme]) button#_root__cancel._root_show {
+  display: inline-block;
+}
+div[data-id="[root]_body"]:not([data-theme]) progress#_root__progress._root_show {
+  display: inline-block;
+}
+div[data-id="[root]_body"]:not([data-theme]) div#_root__status._root_show {
+  display: inline-block;
+}
+div[data-id="[root]_body"]:not([data-theme]) button#_root__repeat._root_show {
+  display: inline-block;
+}
+
+/** ---------
+    ANIMATED
+*/
+progress#_root__progress::-webkit-progress-value {
+  transition: width 2s;
+}
+
+/*# sourceMappingURL=build_cssCOMPILED.css.map */

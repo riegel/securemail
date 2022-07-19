@@ -1,0 +1,1 @@
+"671","960","JPEG","FILE","PRIVATE","126577","06/27/2022 16:29","TRUE","1","/apps/securemail/upload/incoming/644165573901_006698/.TEMP/14EB04D0-C6DE-45CE-AF85-385651F77672TEMP-1691.jpeg","usr/bin/identify -format ^"<x>%w</x> <y>%h</y> <m>%m</m>^" /http/users/user_wbl/private//apps/securemail/upload/incoming/644165573901_006698/14EB04D0-C6DE-45CE-AF85-385651F77672.jpeg"
