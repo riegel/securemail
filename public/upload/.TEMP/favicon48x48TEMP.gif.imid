@@ -1,1 +1,0 @@
-"48","48","GIF","FILE","PUBLIC","2615","11/21/2021 01:50:00","TRUE","1","/apps/api/upload/.TEMP/favicon48x48TEMP-2081.gif","usr/bin/identify -format ^"<x>%w</x> <y>%h</y> <m>%m</m>^" /http/users/user_wbl/public/apps/api/upload/favicon48x48.gif"

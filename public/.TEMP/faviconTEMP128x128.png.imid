@@ -1,1 +1,0 @@
-"128","128","PNG","FILE","PUBLIC","4446","06/22/2022 14:32","TRUE","1","/apps/securemail/.TEMP/faviconTEMP128x128-6210.png","usr/bin/identify -format ^"<x>%w</x> <y>%h</y> <m>%m</m>^" /http/users/user_wbl/public/apps/securemail/.TEMP/faviconTEMP128x128.png"

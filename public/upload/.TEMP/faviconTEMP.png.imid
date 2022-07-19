@@ -1,1 +1,0 @@
-"512","512","PNG","FILE","PUBLIC","116395","11/06/2021 00:07:00","TRUE","1","/apps/api/upload/.TEMP/faviconTEMP-1006.png","usr/bin/identify -format ^"<x>%w</x> <y>%h</y> <m>%m</m>^" /http/users/user_wbl/public/apps/api/upload/favicon.png"
